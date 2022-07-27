@@ -28,10 +28,14 @@ for i = 1:imNum
     %% Choose ROI
     
     if i ~= 1
-        bName = questdlg('Does this ROI work for this image?','ROI Check','Yes', 'No ','Yes');
-        I_roi=I(y(1):y(2),x(1):x(2),:);
+       % I_roi=I(y(1):y(2),x(1):x(2),:);
         figure
-        imshow(I_roi)
+        imshow(I)
+        hold on
+        plot(roi.x,roi.y,'r-')
+        pause(1)
+        hold off
+        bName = questdlg('Does this ROI work for this image?','ROI Check','Yes', 'No ','Yes');
     else 
         bName = 'No ';
     end
@@ -64,10 +68,11 @@ for i = 1:imNum
         x=[round(min(roi.x)),round(max(roi.x))];
         y=[round(min(roi.y)),round(max(roi.y))];
         
-        I_roi=I(y(1):y(2),x(1):x(2),:);
-        figure
-        imshow(I_roi)
     end
+    
+    I_roi=I(y(1):y(2),x(1):x(2),:);
+    figure
+    imshow(I_roi)
     
     %% Color masks
     [bwBlue,BlueMask]=brightBlue(I_roi);
@@ -79,18 +84,21 @@ for i = 1:imNum
     
     figure
     imshow(comp)
+    title(filename{i})
     
-    grayroi=rgb2gray(I_roi);
+%     figure
+%     imshow(imcomplement(comp))
     
+    imBoundaries {i} = comp;
     
-    withlines=imcomplement(comp)+im2double(rgb2gray(I_roi));
+end
+
+figure
+montage(imBoundaries,'size',[1 NaN])
+for i = 1:imNum
     
-    figure
-    imshow(withlines)
-    
-    figure
-    imshow(imcomplement(comp))
-    
+    subplot(1,imNum,i)
+    imshow(imBoundaries {i})
     
 end
 

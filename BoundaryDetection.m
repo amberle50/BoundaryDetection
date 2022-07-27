@@ -1,6 +1,12 @@
 function BoundaryDetection
+%% INSTRUCTIONS FOR USE
+% 
+% You will need to specify the path that contains the images on Line 12.
+% 
+% Interactive segments will walk you through choosing the images in each
+% sequence to analyze and specifying the ROI for each image.
 
-%Setup logistics
+%% Setup logistics
 
 set(0,'DefaultFigureWindowStyle','docked')
 path_image='G:\My Drive\Maddy_Boundary_Detection\Raw_Photos';
@@ -84,19 +90,16 @@ for i = 1:imNum
     
     figure
     imshow(comp)
+    title(filename{i})
     
-    grayroi=rgb2gray(I_roi);
+%     figure
+%     imshow(imcomplement(comp))
     
-    
-    withlines=imcomplement(comp)+im2double(rgb2gray(I_roi));
-    
-    figure
-    imshow(withlines)
-    
-    figure
-    imshow(imcomplement(comp))
-    
+    imBoundaries {i} = comp;
     
 end
+
+figure
+montage(imBoundaries,'size',[1 NaN])
 
 end
