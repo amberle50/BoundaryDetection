@@ -1,13 +1,29 @@
+function BoundaryDetection
+
 %Setup logistics
-clear all
-close all
-clc
 
 set(0,'DefaultFigureWindowStyle','docked')
 path_image='G:\My Drive\Maddy_Boundary_Detection\Raw_Photos';
-%% Load image
+
+%% Load images
+
+prompt = 'How many images are in this sequence?';
+input = inputdlg(prompt)
+imNum = str2num(input{1});
+
+filename = {};
+for i = 1:imNum
+list=dir(path_image);
+lst={list.name};
+[indx,tf] = listdlg('PromptString',{['Select image number ' num2str(i)], ' in the image sequence.'},'ListSTring',lst,'SelectionMode','single')
+flnm=lst{indx};
+
+filename{i} = flnm;
+end
+
+
+
 I = imread([path_image filesep 'DSC_0011.JPG']);
-%I = imread([path_image filesep '2s_6_23.JPG']);
 
 %% Choose ROI
 
@@ -66,4 +82,4 @@ imshow(imcomplement(comp))
 figure
 imshow(bwskel(I_roi(find(comp))))
 
-
+end
