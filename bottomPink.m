@@ -1,4 +1,4 @@
-function [BW,maskedRGBImage] = bottomPink(RGB)
+function [BW,maskedRGBImage] = bottomPink(RGB,IMIN,IMAX)
 %createMask  Threshold RGB image using auto-generated code from colorThresholder app.
 %  [BW,MASKEDRGBIMAGE] = createMask(RGB) thresholds image RGB using
 %  auto-generated code from the colorThresholder app. The colorspace and
@@ -13,17 +13,35 @@ function [BW,maskedRGBImage] = bottomPink(RGB)
 % Convert RGB image to chosen color space
 I = rgb2lab(RGB);
 
-% Define thresholds for channel 1 based on histogram settings
-channel1Min = 31.037;
-channel1Max = 61.825;
-
-% Define thresholds for channel 2 based on histogram settings
-channel2Min = 20.758;
-channel2Max = 59.197;
-
-% Define thresholds for channel 3 based on histogram settings
-channel3Min = -61.136;
-channel3Max = -14.533;
+if exist('IMIN') && exist('IMAX')
+    
+    % Define thresholds for channel 1 based on histogram settings
+    channel1Min = IMIN(1);
+    channel1Max = IMAX(1);
+    
+    % Define thresholds for channel 2 based on histogram settings
+    channel2Min = IMIN(2);
+    channel2Max = IMAX(2);
+    
+    % Define thresholds for channel 3 based on histogram settings
+    channel3Min = IMIN(3);
+    channel3Max = IMAX(3);
+    
+else
+    
+    % Define thresholds for channel 1 based on histogram settings
+    channel1Min = 31.037;
+    channel1Max = 61.825;
+    
+    % Define thresholds for channel 2 based on histogram settings
+    channel2Min = 20.758;
+    channel2Max = 59.197;
+    
+    % Define thresholds for channel 3 based on histogram settings
+    channel3Min = -61.136;
+    channel3Max = -14.533;
+    
+end
 
 % Create mask based on chosen histogram thresholds
 sliderBW = (I(:,:,1) >= channel1Min ) & (I(:,:,1) <= channel1Max) & ...
