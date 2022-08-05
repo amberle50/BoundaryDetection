@@ -6,7 +6,8 @@ INPUT
 -images with several layers of colored sand in a thin aquaria
 
 OUTPUT
--thresholded images showing the boundaries between each colored layer
+-thresholded images showing the boundaries between each colored layer (the images will be stacked in the order they are chosen)
+-several figures showing where the function "thinks" each layer is
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -15,6 +16,6 @@ INSTRUCTIONS FOR USE
 OPEN BoundaryDetection.m in MATLAB.
 The main code to run is BoundaryDetection.m. All other .m files need to be in the same folder as the BoundaryDetection.m, as they will be called within the primary function.
 
-You will need to specify the path that contains the images on Line 12.
+You will need to specify the path that contains the images on Line 13.
 
-Interactive segments will walk you through choosing the images in each sequence to analyze and specifying the ROI for each image.
+Interactive segments will walk you through choosing the images in each sequence to analyze, specifying the ROI for each image, and choosing the function with which to find the layers.

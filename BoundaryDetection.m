@@ -1,10 +1,11 @@
 function BoundaryDetection
 %% INSTRUCTIONS FOR USE
 %
-% You will need to specify the path that contains the images on Line 12.
+% You will need to specify the path that contains the images on Line 13.
 %
 % Interactive segments will walk you through choosing the images in each
-% sequence to analyze and specifying the ROI for each image.
+% sequence to analyze, specifying the ROI for each image, and choosing 
+% the function with which to find the layers.
 
 %% Setup logistics
 
@@ -91,9 +92,6 @@ for i = 1:imNum
     imshow(comp)
     title(filename{i})
     
-    %     figure
-    %     imshow(imcomplement(comp))
-    
     imBoundaries {i} = comp;
     totBlue{i}=bwBlue;
     totTurquoise{i}=bwTurquoise;
@@ -111,71 +109,13 @@ for i = 1:imNum
         if bName == 'No '
             
             clear 'comp' 'bwTurquoise' 'bwPurple' 'bwBlue' 'bwPink'
-           
-%             %% Previous way to redo layers - doesn't work well
-%             color = {'purple';'turquoise';'blue';'pink'};
-%             
-%             for j=1:4
-%                 
-%                 figure
-%                 imshow(I_roi)
-%                 title(['Choose ' color{j,:} ' points.'])
-%                 
-%                 %Give instructions
-%                 questdlg(['Select the area containing the ' color{j,:} ' layer. Then double click the first point to complete.'],'Instructions','Start','Start');
-%                 
-%                 % Interactively find each layer
-%                 h = impoly;
-%                 roi_poly = wait(h);
-%                 
-%                 % Store ROI points
-%                 tmp = getPosition(h);
-%                 roi.x = tmp(:,1);
-%                 roi.y = tmp(:,2);
-%                 
-%                 %Create mask parameters
-%                 msk=roipoly(I_roi,roi.x,roi.y);
-%                 msk=double(msk);
-%                 msk(msk==0) = NaN;
-%                 Ilyr=double(I_roi);
-%                 filter_I = Ilyr .* msk;
-%                 
-%                 %show mask
-%                 figure
-%                 imshow(uint8(filter_I))
-%                 
-%                 filter_I=uint8(filter_I);
-%                 
-%                 
-%                 if j == 1
-%                     filter_I=rgb2lab(filter_I);
-%                     IMIN=[min(min(filter_I(:,:,1))),min(min(filter_I(:,:,2))),min(min(filter_I(:,:,3)))];
-%                     IMAX=[max(max(filter_I(:,:,1))),max(max(filter_I(:,:,2))),max(max(filter_I(:,:,3)))];
-%                     [bwPurple,PurpleMask]=bothPurples(I_roi,IMIN,IMAX);
-%                 elseif j ==2
-%                     filter_I=rgb2hsv(filter_I);
-%                     IMIN=[min(min(filter_I(:,:,1))),min(min(filter_I(:,:,2))),min(min(filter_I(:,:,3)))];
-%                     IMAX=[max(max(filter_I(:,:,1))),max(max(filter_I(:,:,2))),max(max(filter_I(:,:,3)))];
-%                     [bwTurquoise,TurquoiseMask]=brightTurquoise(I_roi,IMIN,IMAX);
-%                 elseif j ==3
-%                     filter_I=rgb2hsv(filter_I);
-%                     IMIN=[min(min(filter_I(:,:,1))),min(min(filter_I(:,:,2))),min(min(filter_I(:,:,3)))];
-%                     IMAX=[max(max(filter_I(:,:,1))),max(max(filter_I(:,:,2))),max(max(filter_I(:,:,3)))];
-%                     [bwBlue,BlueMask]=brightBlue(I_roi,IMIN,IMAX);
-%                 elseif j ==4
-%                     filter_I=rgb2lab(filter_I);
-%                     IMIN=[min(min(filter_I(:,:,1))),min(min(filter_I(:,:,2))),min(min(filter_I(:,:,3)))];
-%                     IMAX=[max(max(filter_I(:,:,1))),max(max(filter_I(:,:,2))),max(max(filter_I(:,:,3)))];
-%                     [bwPink,PinkMask]=bottomPink(I_roi,IMIN,IMAX);
-%                 end
-%             end
             
-    [bwBlue,BlueMask]=backupBlue(I_roi);
-    [bwTurquoise,TurquoiseMask]=backupTurquoise(I_roi);
-    [bwPurple,PurpleMask]=backupPurples(I_roi);
-    [bwPink,PinkMask]=backupPink(I_roi);
-
-
+            [bwBlue,BlueMask]=backupBlue(I_roi);
+            [bwTurquoise,TurquoiseMask]=backupTurquoise(I_roi);
+            [bwPurple,PurpleMask]=backupPurples(I_roi);
+            [bwPink,PinkMask]=backupPink(I_roi);
+            
+            
             comp=bwBlue+bwTurquoise+bwPurple+bwPink;
             
             figure
