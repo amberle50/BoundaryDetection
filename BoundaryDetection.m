@@ -102,9 +102,6 @@ for i = 1:imNum
     
     %Give instructions to person finding the ROI
     bName = questdlg('Are all the layers present?','Redo Layers?','Yes','No ','Yes');
-    loopy=1;
-    
-    while loopy==1
         
         if bName == 'No '
             
@@ -126,17 +123,16 @@ for i = 1:imNum
             bName = questdlg('Are all the layers present?','Redo Layers?','Yes','No ','Yes');
             
             if bName=='Yes'
-                loopy=0;
                 totBlue{i}=bwBlue;
                 totTurquoise{i}=bwTurquoise;
                 totPurple{i}=bwPurple;
                 totPink{i}=bwPink;
                 imBoundaries {i} = comp;
                 imOrig{i} = I_roi;
+            elseif bName == 'No '
+                error 'Layering may need to detected by hand...'
             end
-        elseif bName=='Yes'
-            loopy=0;
-        end
+
     end
 end
 
