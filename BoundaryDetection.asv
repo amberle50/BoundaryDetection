@@ -1,15 +1,24 @@
 function BoundaryDetection
 %% INSTRUCTIONS FOR USE
 %
-% You will need to specify the path that contains the images on Line 12.
+% You will need to specify the path that contains the images on Line 13.
 %
 % Interactive segments will walk you through choosing the images in each
-% sequence to analyze and specifying the ROI for each image.
+% sequence to analyze, specifying the ROI for each image, and choosing 
+% the function with which to find the layers.
 
 %% Setup logistics
 
 set(0,'DefaultFigureWindowStyle','docked')
-path_image='G:\My Drive\Maddy_Boundary_Detection\Raw_Photos';
+%path_image='G:\My Drive\Maddy_Boundary_Detection\Raw_Photos';
+path_image='G:\My Drive\Maddy_Boundary_Detection\New Photos';
+
+%% Set Layer Colors
+
+prompt = 'Select the colors in the layers and press OK.';
+col_list = {'Blue';'Turquoise';'Purple';'Pink'};
+[indx,tf] = listdlg('ListString',prompt,'ListSTring',col_list)
+ColChoices = indx;
 
 %% Load images
 
@@ -79,20 +88,35 @@ for i = 1:imNum
     figure
     imshow(I_roi)
     
+    clear tmp %TODO
     %% Color masks
-    [bwBlue,BlueMask]=brightBlue(I_roi);
-    [bwTurquoise,TurquoiseMask]=brightTurquoise(I_roi);
-    [bwPurple,PurpleMask]=bothPurples(I_roi);
-    [bwPink,PinkMask]=bottomPink(I_roi);
+    tmp = size(I_roi);
+    if ismember(1,ColChoices)
+        [bwBlue,BlueMask]=brightBlue(I_roi);
+    else
+        bwBlue=NaN(tmp(1:2));
+    end
+    if ismember(2,ColChoices)
+        [bwTurquoise,TurquoiseMask]=brightTurquoise(I_roi);
+        else
+        bwTurquoise=NaN(tmp(1:2));
+    end
+    if ismember(3,ColChoices)
+        [bwPurple,PurpleMask]=bothPurples(I_roi);
+        else
+        bwPurple=NaN(tmp(1:2));
+    end
+    if ismember (4,ColChoices)
+        [bwPink,PinkMask]=bottomPink(I_roi);
+        else
+        bwPink=NaN(tmp(1:2));
+    end
     
     comp=bwBlue+bwTurquoise+bwPurple+bwPink;
     
     figure
     imshow(comp)
     title(filename{i})
-    
-    %     figure
-    %     imshow(imcomplement(comp))
     
     imBoundaries {i} = comp;
     totBlue{i}=bwBlue;
@@ -102,80 +126,21 @@ for i = 1:imNum
     imOrig{i} = I_roi;
     FalseColor(I_roi,bwTurquoise, bwBlue, bwPurple, bwPink)
     
+    clear tmp
+    
     %Give instructions to person finding the ROI
     bName = questdlg('Are all the layers present?','Redo Layers?','Yes','No ','Yes');
-    loopy=1;
-    
-    while loopy==1
         
         if bName == 'No '
             
             clear 'comp' 'bwTurquoise' 'bwPurple' 'bwBlue' 'bwPink'
-           
-%             %% Previous way to redo layers - doesn't work well
-%             color = {'purple';'turquoise';'blue';'pink'};
-%             
-%             for j=1:4
-%                 
-%                 figure
-%                 imshow(I_roi)
-%                 title(['Choose ' color{j,:} ' points.'])
-%                 
-%                 %Give instructions
-%                 questdlg(['Select the area containing the ' color{j,:} ' layer. Then double click the first point to complete.'],'Instructions','Start','Start');
-%                 
-%                 % Interactively find each layer
-%                 h = impoly;
-%                 roi_poly = wait(h);
-%                 
-%                 % Store ROI points
-%                 tmp = getPosition(h);
-%                 roi.x = tmp(:,1);
-%                 roi.y = tmp(:,2);
-%                 
-%                 %Create mask parameters
-%                 msk=roipoly(I_roi,roi.x,roi.y);
-%                 msk=double(msk);
-%                 msk(msk==0) = NaN;
-%                 Ilyr=double(I_roi);
-%                 filter_I = Ilyr .* msk;
-%                 
-%                 %show mask
-%                 figure
-%                 imshow(uint8(filter_I))
-%                 
-%                 filter_I=uint8(filter_I);
-%                 
-%                 
-%                 if j == 1
-%                     filter_I=rgb2lab(filter_I);
-%                     IMIN=[min(min(filter_I(:,:,1))),min(min(filter_I(:,:,2))),min(min(filter_I(:,:,3)))];
-%                     IMAX=[max(max(filter_I(:,:,1))),max(max(filter_I(:,:,2))),max(max(filter_I(:,:,3)))];
-%                     [bwPurple,PurpleMask]=bothPurples(I_roi,IMIN,IMAX);
-%                 elseif j ==2
-%                     filter_I=rgb2hsv(filter_I);
-%                     IMIN=[min(min(filter_I(:,:,1))),min(min(filter_I(:,:,2))),min(min(filter_I(:,:,3)))];
-%                     IMAX=[max(max(filter_I(:,:,1))),max(max(filter_I(:,:,2))),max(max(filter_I(:,:,3)))];
-%                     [bwTurquoise,TurquoiseMask]=brightTurquoise(I_roi,IMIN,IMAX);
-%                 elseif j ==3
-%                     filter_I=rgb2hsv(filter_I);
-%                     IMIN=[min(min(filter_I(:,:,1))),min(min(filter_I(:,:,2))),min(min(filter_I(:,:,3)))];
-%                     IMAX=[max(max(filter_I(:,:,1))),max(max(filter_I(:,:,2))),max(max(filter_I(:,:,3)))];
-%                     [bwBlue,BlueMask]=brightBlue(I_roi,IMIN,IMAX);
-%                 elseif j ==4
-%                     filter_I=rgb2lab(filter_I);
-%                     IMIN=[min(min(filter_I(:,:,1))),min(min(filter_I(:,:,2))),min(min(filter_I(:,:,3)))];
-%                     IMAX=[max(max(filter_I(:,:,1))),max(max(filter_I(:,:,2))),max(max(filter_I(:,:,3)))];
-%                     [bwPink,PinkMask]=bottomPink(I_roi,IMIN,IMAX);
-%                 end
-%             end
             
-    [bwBlue,BlueMask]=backupBlue(I_roi);
-    [bwTurquoise,TurquoiseMask]=brightTurquoise(I_roi);
-    [bwPurple,PurpleMask]=bothPurples(I_roi);
-    [bwPink,PinkMask]=bottomPink(I_roi);
-
-
+            [bwBlue,BlueMask]=backupBlue(I_roi);
+            [bwTurquoise,TurquoiseMask]=backupTurquoise(I_roi);
+            [bwPurple,PurpleMask]=backupPurples(I_roi);
+            [bwPink,PinkMask]=backupPink(I_roi);
+            
+            
             comp=bwBlue+bwTurquoise+bwPurple+bwPink;
             
             figure
@@ -186,17 +151,16 @@ for i = 1:imNum
             bName = questdlg('Are all the layers present?','Redo Layers?','Yes','No ','Yes');
             
             if bName=='Yes'
-                loopy=0;
                 totBlue{i}=bwBlue;
                 totTurquoise{i}=bwTurquoise;
                 totPurple{i}=bwPurple;
                 totPink{i}=bwPink;
                 imBoundaries {i} = comp;
                 imOrig{i} = I_roi;
+            elseif bName == 'No '
+                error 'Layering may need to detected by hand...'
             end
-        elseif bName=='Yes'
-            loopy=0;
-        end
+
     end
 end
 

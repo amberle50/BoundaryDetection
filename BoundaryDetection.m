@@ -3,14 +3,22 @@ function BoundaryDetection
 %
 % You will need to specify the path that contains the images on Line 13.
 %
-% Interactive segments will walk you through choosing the images in each
-% sequence to analyze, specifying the ROI for each image, and choosing 
-% the function with which to find the layers.
+% Interactive segments will walk you through choosing the layer colors, 
+% choosing the images in each sequence to analyze, specifying the ROI for 
+%each image, and choosing the function with which to find the layers.
 
 %% Setup logistics
 
 set(0,'DefaultFigureWindowStyle','docked')
-path_image='G:\My Drive\Maddy_Boundary_Detection\Raw_Photos';
+%path_image='G:\My Drive\Maddy_Boundary_Detection\Raw_Photos';
+path_image='G:\My Drive\Maddy_Boundary_Detection\New Photos';
+
+%% Set Layer Colors
+
+prompt = 'Select the colors in the layers and press OK.';
+col_list = {'Blue';'Turquoise';'Purple';'Pink'};
+[indx,tf] = listdlg('ListString',prompt,'ListSTring',col_list)
+ColChoices = indx;
 
 %% Load images
 
@@ -80,11 +88,29 @@ for i = 1:imNum
     figure
     imshow(I_roi)
     
+    clear tmp %TODO
     %% Color masks
-    [bwBlue,BlueMask]=brightBlue(I_roi);
-    [bwTurquoise,TurquoiseMask]=brightTurquoise(I_roi);
-    [bwPurple,PurpleMask]=bothPurples(I_roi);
-    [bwPink,PinkMask]=bottomPink(I_roi);
+    tmp = size(I_roi);
+    if ismember(1,ColChoices)
+        [bwBlue,BlueMask]=brightBlue(I_roi);
+    else
+        bwBlue=zeros(tmp(1:2));
+    end
+    if ismember(2,ColChoices)
+        [bwTurquoise,TurquoiseMask]=brightTurquoise(I_roi);
+        else
+        bwTurquoise=zeros(tmp(1:2));
+    end
+    if ismember(3,ColChoices)
+        [bwPurple,PurpleMask]=bothPurples(I_roi);
+        else
+        bwPurple=zeros(tmp(1:2));
+    end
+    if ismember (4,ColChoices)
+        [bwPink,PinkMask]=bottomPink(I_roi);
+        else
+        bwPink=zeros(tmp(1:2));
+    end
     
     comp=bwBlue+bwTurquoise+bwPurple+bwPink;
     
@@ -99,6 +125,8 @@ for i = 1:imNum
     totPink{i}=bwPink;
     imOrig{i} = I_roi;
     FalseColor(I_roi,bwTurquoise, bwBlue, bwPurple, bwPink)
+    
+    clear tmp
     
     %Give instructions to person finding the ROI
     bName = questdlg('Are all the layers present?','Redo Layers?','Yes','No ','Yes');
@@ -142,7 +170,5 @@ montage(imBoundaries,'size',[1 NaN])
 subplot(2,1,2)
 montage(imOrig,'size',[1 NaN])
 
-
-disp 'Breakpoint'
 
 end
