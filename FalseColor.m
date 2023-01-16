@@ -1,7 +1,7 @@
-function FalseColor(Original,TurquoiseLayer, BlueLayer, PurpleLayer, PinkLayer) 
+function [falsecolor]=FalseColor(Original,TurquoiseLayer, BlueLayer, PurpleLayer, PinkLayer) 
 E=Original;
 
-figure
+falsecolor=figure;
 subplot(1,2,1)
 imshow(E, 'InitialMag', 'fit') 
 

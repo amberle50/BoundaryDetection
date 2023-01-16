@@ -1,4 +1,4 @@
-function BoundaryDetection
+function BoundaryDetectionOptimized
 %% INSTRUCTIONS FOR USE
 %
 % You will need to specify the path that contains the images on Line 13.
@@ -10,44 +10,42 @@ function BoundaryDetection
 %% Setup logistics
 
 set(0,'DefaultFigureWindowStyle','docked')
-path_image='G:\My Drive\Maddy_Boundary_Detection\Raw_Photos';
-%path_image='G:\My Drive\Maddy_Boundary_Detection\BoundaryDetection\New Photos from Jenny';
+%path_image='G:\My Drive\Maddy_Boundary_Detection\Raw_Photos';
+path_image='G:\My Drive\Maddy_Boundary_Detection\BoundaryDetection\New Photos from Jenny';
 path_save='G:\My Drive\Maddy_Boundary_Detection\BoundaryDetection\New Photos from Jenny\Estimated_Proportions';
 
 %% Set Layer Colors
 
 prompt = 'Select the colors in the layers.';
 col_list = {'Blue';'Turquoise';'Purple';'Pink'};
-[indx,tf] = listdlg('PromptString',prompt,'ListSTring',col_list)
-ColChoices = indx;
+[ColChoices,~] = listdlg('PromptString',prompt,'ListSTring',col_list);
 
-%% Load images
 
+%% Load and analyze images
 prompt = 'How many images are in this sequence?';
-input = inputdlg(prompt)
-imNum = str2num(input{1});
+input = inputdlg(prompt);
+imNum = str2double(input{1});
 
-filename = {};
+list=dir(path_image);
+lst={list.name};
+[indx,~] = listdlg('PromptString',{'Select images in the sequence.'},'ListString',lst,'SelectionMode','multiple');
+flnm=lst(indx);
+
+images = {};
 for i = 1:imNum
-    list=dir(path_image);
-    lst={list.name};
-    [indx,tf] = listdlg('PromptString',{['Select image number ' num2str(i)], ' in the image sequence.'},'ListSTring',lst,'SelectionMode','single')
-    flnm=lst{indx};
-    
-    filename{i} = flnm;
+    images{i} = imread([path_image filesep flnm{i}]);
 end
 
-%% Do image analysis
 histfig=figure;
 compfig=figure;
-for i = 1:imNum
-    
-    I = imread([path_image filesep filename{i}]);
-    
+for i = 1:length(indx)
+    I = images{i};
+    % Code to perform image analysis goes here
+
     %% Choose ROI
     
     if i ~= 1
-        tmpfig=figure;
+        tmpfig = figure;
         imshow(I)
         hold on
         plot(roi.x,roi.y,'r-')
@@ -67,7 +65,7 @@ for i = 1:imNum
         
         roifig=figure;
         imshow(I)
-        title(['Choose ROI points.'])
+        title('Choose ROI points.')
         
         % Interactively find ROI
         h = impoly;
@@ -107,7 +105,7 @@ for i = 1:imNum
     %% Color masks
     tmp = size(I_roi);
     if ismember(1,ColChoices)
-        [bwBlue,BlueMask]=brightBlue(I_roi);
+        [bwBlue,~]=brightBlue(I_roi);
     else
         bwBlue=zeros(tmp(1:2));
     end
@@ -117,12 +115,12 @@ for i = 1:imNum
         bwTurquoise=zeros(tmp(1:2));
     end
     if ismember(3,ColChoices)
-        [bwPurple,PurpleMask]=bothPurples(I_roi);
+        [bwPurple,~]=bothPurples(I_roi);
         else
         bwPurple=zeros(tmp(1:2));
     end
     if ismember (4,ColChoices)
-        [bwPink,PinkMask]=bottomPink(I_roi);
+        [bwPink,~]=bottomPink(I_roi);
         else
         bwPink=zeros(tmp(1:2));
     end
@@ -134,8 +132,8 @@ for i = 1:imNum
     
     figure(histfig)
     subplot(imNum,1,i)
-    [yh,yx]=imhist(TurquoiseMask(:,:,1));
-    [ys,yx]=imhist(TurquoiseMask(:,:,2));
+    [yh,~]=imhist(TurquoiseMask(:,:,1));
+    [ys,~]=imhist(TurquoiseMask(:,:,2));
     [yv,yx]=imhist(TurquoiseMask(:,:,3));
     
     plot(yx,yh,'Red',yx,ys,'Green',yx,yv,'Blue')
@@ -151,7 +149,7 @@ for i = 1:imNum
     
     testfig=figure;
     imshow(comp)
-    title(filename{i})
+    title(flnm{i})
     
     imBoundaries {i} = comp;
     totBlue{i}=bwBlue;
@@ -173,17 +171,17 @@ for i = 1:imNum
             
             clear 'comp' 'bwTurquoise' 'bwPurple' 'bwBlue' 'bwPink'
             
-            [bwBlue,BlueMask]=backupBlue(I_roi);
+            [bwBlue,~]=backupBlue(I_roi);
             [bwTurquoise,TurquoiseMask]=backupTurquoise(I_roi);
-            [bwPurple,PurpleMask]=backupPurples(I_roi);
-            [bwPink,PinkMask]=backupPink(I_roi);
+            [bwPurple,~]=backupPurples(I_roi);
+            [bwPink,~]=backupPink(I_roi);
                    
             
             comp=bwBlue+bwTurquoise+bwPurple+bwPink;
             
             testfig=figure;
             imshow(comp)
-            title(filename{i})
+            title(flnm{i})
             
             FalseColor(I_roi,bwTurquoise, bwBlue, bwPurple, bwPink)
             bName = questdlg('Are all the layers present?','Redo Layers?','Yes','No ','Yes');
@@ -205,7 +203,7 @@ for i = 1:imNum
         end
      % THIS IS WHERE I NEED TO ADD THE STANDARD COMPARISON FUNCTION
     [prop]=proportion_estimation(TurquoiseMask);
-    save([path_save filesep filename{i}(1:length(filename{i})-4) '.mat'], 'prop')
+    save([path_save filesep flnm{i}(1:length(flnm{i})-4) '.mat'], 'prop')
     
 end
 
